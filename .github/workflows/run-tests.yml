@@ -36,7 +36,7 @@ jobs:
         psql -h localhost -U postgres template1 -c 'create extension pg_trgm;'
     - name: DB tuning for CI
       run: |
-        psql -h localhost -U postgres -c "alter system set synchronous_commit=off; alter system set fsync=off; alter system set full_page_writes=off; alter system set jit=off;"
+        psql -h localhost -U postgres -c "alter system set synchronous_commit=off;" -c "alter system set fsync=off;" -c "alter system set full_page_writes=off;" -c "alter system set jit=off;"
         pg_ctl reload
     - name: Install PyPI dependencies
       run: |
