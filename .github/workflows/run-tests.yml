@@ -48,7 +48,7 @@ jobs:
         isort . -c
     - name: Run pytest code functionality tests
       run: |
-        pytest --cov=. --reuse-db --create-db --durations=20
+        pytest --cov=. --reuse-db --create-db -vv --durations=25 --durations-min=0.5 --setup-show --maxfail=1
     - name: Generate Report
       run: |
         pip install coverage
