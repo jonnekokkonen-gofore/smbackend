@@ -30,7 +30,6 @@ jobs:
     - name: Install required Ubuntu packages
       run: |
         sudo apt-get update && sudo apt-get -y --no-install-recommends install gdal-bin voikko-fi libvoikko-dev gettext 
-        sudo apt-get install redis-server
     - name: Create needed postgis extensions
       run: |
         psql -h localhost -U postgres template1 -c 'create extension hstore;'
@@ -49,7 +48,7 @@ jobs:
         isort . -c
     - name: Run pytest code functionality tests
       run: |
-        pytest --cov=.
+        pytest --cov=. --reuse-db --create-db --durations=20
     - name: Generate Report
       run: |
         pip install coverage
