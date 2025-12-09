@@ -98,9 +98,31 @@ def bulk_create_rows(data_model, model_objs, measurements, datas):
     data_model.objects.bulk_create(model_objs)
     logger.info(f"Bulk creating {len(measurements)} Measurement rows")
     Measurement.objects.bulk_create(measurements)
-    for key in datas:
-        data = datas[key]
-        [data["data"].measurements.add(m) for m in data["measurements"]]
+    # Avoid per-measurement .add() calls by bulk-creating through rows.
+    through_model = data_model.measurements.through
+    data_field = [
+        f
+        for f in through_model._meta.fields
+        if f.is_relation and f.related_model == data_model
+    ][0]
+    measurement_field = [
+        f
+        for f in through_model._meta.fields
+        if f.is_relation and f.related_model == Measurement
+    ][0]
+    through_rows = []
+    for data in datas.values():
+        for measurement in data["measurements"]:
+            through_rows.append(
+                through_model(
+                    **{
+                        data_field.name: data["data"],
+                        measurement_field.name: measurement,
+                    }
+                )
+            )
+    if through_rows:
+        through_model.objects.bulk_create(through_rows)
 
 
 def save_years(df, stations):
