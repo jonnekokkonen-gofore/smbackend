@@ -5,4 +5,4 @@ set -xe
 flake8
 black --check .
 isort . -c
-pytest --cov=.
+pytest --cov=. --reuse-db --create-db --durations=20
